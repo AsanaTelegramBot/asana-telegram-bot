@@ -1,11 +1,11 @@
 package ru.ottepel.storage;
 
-import ru.ottepel.model.User;
+import ru.ottepel.model.TelegramUser;
 
 /**
  * Created by savetisyan on 17/03/17
  */
 public interface AbstractStorage {
-    void saveUser(User user);
-    User getUser(long id);
+    void saveUser(TelegramUser user);
+    TelegramUser getUser(long id);
 }

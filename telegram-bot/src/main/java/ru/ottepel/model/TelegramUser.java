@@ -1,11 +1,13 @@
 package ru.ottepel.model;
 
+import com.asana.models.User;
+
 /**
  * Created by savetisyan on 17/03/17
  */
-public class User {
+public class TelegramUser {
     private long id;
-    private String token;
+    private User user;
 
     public long getId() {
         return id;
@@ -15,12 +17,12 @@ public class User {
         this.id = id;
     }
 
-    public String getToken() {
-        return token;
+    public User getUser() {
+        return user;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -28,16 +30,16 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User user = (User) o;
+        TelegramUser that = (TelegramUser) o;
 
-        if (id != user.id) return false;
-        return token != null ? token.equals(user.token) : user.token == null;
+        if (id != that.id) return false;
+        return user != null ? user.equals(that.user) : that.user == null;
     }
 
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (token != null ? token.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
         return result;
     }
 }

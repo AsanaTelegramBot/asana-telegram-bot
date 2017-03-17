@@ -1,5 +1,6 @@
 package ru.ottepel;
 
+import com.asana.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import ru.ottepel.command.TypeAheadSearch;
+import ru.ottepel.model.TelegramUser;
 import ru.ottepel.storage.AbstractStorage;
 
 import java.io.IOException;
@@ -50,9 +52,16 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
             try {
                 Message message = update.getMessage();
                 String token = asanaClient.authUserByCode(message.getText().trim());
+                User userInfo = asanaClient.getUserInfo(token);
+
+                TelegramUser tgUser = new TelegramUser();
+                tgUser.setId(update.getMessage().getChatId());
+                tgUser.setUser(userInfo);
+                storage.saveUser(tgUser);
+
                 sendMessage(new SendMessage()
                         .setChatId(message.getChatId())
-                        .setText(token));
+                        .setText(String.format("Hello, %s!", userInfo.name)));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             } catch (IOException e) {

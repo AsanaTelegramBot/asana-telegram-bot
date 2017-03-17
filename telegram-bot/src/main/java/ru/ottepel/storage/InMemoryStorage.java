@@ -1,7 +1,7 @@
 package ru.ottepel.storage;
 
 import org.springframework.stereotype.Component;
-import ru.ottepel.model.User;
+import ru.ottepel.model.TelegramUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,15 +11,15 @@ import java.util.Map;
  */
 @Component
 public class InMemoryStorage implements AbstractStorage {
-    private Map<Long, User> users = new HashMap<>();
+    private Map<Long, TelegramUser> users = new HashMap<>();
 
     @Override
-    public void saveUser(User user) {
+    public void saveUser(TelegramUser user) {
         users.put(user.getId(), user);
     }
 
     @Override
-    public User getUser(long id) {
+    public TelegramUser getUser(long id) {
         return users.get(id);
     }
 }
