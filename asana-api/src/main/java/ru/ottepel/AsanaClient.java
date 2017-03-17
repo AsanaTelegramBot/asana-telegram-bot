@@ -1,16 +1,20 @@
+package ru.ottepel;
+
 import com.asana.OAuthApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 
 @Component
 public class AsanaClient {
+    private final OAuthApp app;
 
     @Autowired
-    private OAuthApp app;
+    public AsanaClient(OAuthApp app) {
+        this.app = app;
+    }
 
-    public String getAuthLink(Long chatId) {
+    public String getAuthLink(Integer chatId) {
         return app.getAuthorizationUrl(String.valueOf(chatId));
     }
 

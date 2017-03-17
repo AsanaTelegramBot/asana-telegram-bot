@@ -1,4 +1,4 @@
-package config;
+package ru.ottepel.config;
 
 import com.asana.OAuthApp;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,22 +7,20 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-public class Config {
+public class AsanaConfig {
+    @Value("${asana.clientId:297359328358654}")
+    private String asanaClientId;
 
-    @Value("asana.clientId")
-    private static String ASANA_CLIENT_ID;
-
-    @Value("asana.clientSecret")
-    private static String ASANA_CLIENT_SECRET;
+    @Value("${asana.clientSecret:e49fa13e01a9c03aecf01ad6f5ee417d}")
+    private String asanaClientSecret;
 
     @Bean
     public OAuthApp app() {
         return new OAuthApp(
-                ASANA_CLIENT_ID,
-                ASANA_CLIENT_SECRET,
+                asanaClientId,
+                asanaClientSecret,
                 OAuthApp.NATIVE_REDIRECT_URI
         );
     }
-
 }
 
