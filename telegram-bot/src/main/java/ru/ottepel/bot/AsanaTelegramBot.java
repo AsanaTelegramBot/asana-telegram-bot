@@ -2,6 +2,7 @@ package ru.ottepel.bot;
 
 import com.asana.models.Project;
 import com.asana.models.User;
+import com.asana.models.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 import org.telegram.telegrambots.bots.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
-import ru.ottepel.AsanaClient;
+import ru.ottepel.api.AsanaClient;
 import ru.ottepel.command.TypeAheadSearch;
 import ru.ottepel.model.TelegramUser;
 import ru.ottepel.storage.AbstractStorage;
@@ -106,7 +107,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 }
                 break;
             case "project":
-                asanaClient.subscribe(id, "https://d4f98ce2.ngrok.io/webhooks", user.getToken());
+                Webhook subscribe = asanaClient.subscribe(id, "https://05047605.ngrok.io/webhooks/" + query.getMessage().getChatId(), user.getToken());
                 message.setText("You've subscribed to " + id);
                 break;
         }

@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Import;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
+import ru.ottepel.api.AsanaClient;
+import ru.ottepel.api.config.AsanaConfig;
 import ru.ottepel.bot.AsanaTelegramBot;
-import ru.ottepel.AsanaClient;
 import ru.ottepel.command.*;
 import ru.ottepel.storage.AbstractStorage;
 import ru.ottepel.storage.InMemoryStorage;
@@ -50,7 +51,6 @@ public class BotConfig {
                 new ProjectsListCommand(inMemoryStorage(), asanaClient),
                 new SubscribeCommand(inMemoryStorage(), asanaClient),
                 new HelpCommand());
-
         try {
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiRequestException e) {

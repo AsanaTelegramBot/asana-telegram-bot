@@ -1,4 +1,4 @@
-package ru.ottepel.config;
+package ru.ottepel.api.config;
 
 import com.asana.OAuthApp;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
-//@Configuration
+@Configuration
 public class AsanaConfig {
     @Value("${asana.clientId:297359328358654}")
     private String asanaClientId;

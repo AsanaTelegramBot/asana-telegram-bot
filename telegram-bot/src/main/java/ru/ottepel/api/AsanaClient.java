@@ -1,23 +1,20 @@
-package ru.ottepel;
+package ru.ottepel.api;
 
 import com.asana.Client;
 import com.asana.OAuthApp;
-import com.asana.models.Project;
-import com.asana.models.User;
-import com.asana.models.Webhook;
-import com.asana.models.Workspace;
-import com.asana.requests.CollectionRequest;
+import com.asana.models.*;
 import com.asana.requests.ItemRequest;
-import com.asana.resources.Projects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.List;
 
-//@Component
+@Component
 public class AsanaClient {
     private final OAuthApp app;
+
 
     @Autowired
     public AsanaClient(OAuthApp app) {
@@ -46,6 +43,26 @@ public class AsanaClient {
     public List<Project> getProjects(String workspaceId, String accessToken) throws IOException {
         Client client = createClient(accessToken);
         return client.projects.findByWorkspace(workspaceId).execute();
+    }
+
+    public Task getTask(String id, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.tasks.findById(id).execute();
+    }
+
+    public User getUser(String id, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.users.findById(id).execute();
+    }
+
+    public Story getStory(String id, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.stories.findById(id).execute();
+    }
+
+    public Project getProject(String id, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.projects.findById(id).execute();
     }
 
     public Webhook subscribe(String id, String url, String accessToken) throws IOException {

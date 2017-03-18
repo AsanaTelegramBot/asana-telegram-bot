@@ -1,23 +1,38 @@
 package ru.ottepel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * Created by savetisyan on 18/03/17
  */
-@RestController
+//@RestController
 public class AsanaWebHookController {
-    @RequestMapping(value = "/webhooks", method = RequestMethod.POST)
-    public ResponseEntity webhooks(@RequestHeader("X-Hook-Secret") String secret) {
-        System.out.println(secret);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Hook-Secret", secret);
-        return new ResponseEntity(headers, HttpStatus.OK);
-    }
+//
+//    @Autowired
+//    private AsanaTelegramBot bot;
+//
+//    @RequestMapping(value = "/webhooks/${chatId}", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE
+//    )
+//    public ResponseEntity webhooks(
+//            @RequestHeader(value = "X-Hook-Secret", required = false) String secret,
+//            @RequestHeader(value = "X-Hook-Signature", required = false) String signature,
+//            @PathVariable(value = "chatId") Long chatId) {
+//        System.out.println(secret);
+////        System.out.println(data);
+//        try {
+//            bot.sendMessage(new SendMessage().setChatId(chatId).setText("test"));
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("X-Hook-Secret", secret);
+//        return new ResponseEntity(headers, HttpStatus.OK);
+//    }
 }

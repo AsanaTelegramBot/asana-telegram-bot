@@ -8,7 +8,7 @@ import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.bots.commands.BotCommand;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-import ru.ottepel.AsanaClient;
+import ru.ottepel.api.AsanaClient;
 import ru.ottepel.model.TelegramUser;
 import ru.ottepel.storage.AbstractStorage;
 
