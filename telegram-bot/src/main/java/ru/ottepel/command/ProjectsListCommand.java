@@ -1,6 +1,6 @@
 package ru.ottepel.command;
 
-import com.asana.models.Workspace;
+import com.asana.models.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
@@ -13,37 +13,37 @@ import ru.ottepel.model.TelegramUser;
 import ru.ottepel.storage.AbstractStorage;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by savetisyan on 18/03/17
  */
-public class WorkspacesListCommand extends BotCommand {
+public class ProjectsListCommand extends BotCommand {
     private final AbstractStorage storage;
     private final AsanaClient asanaClient;
 
     @Autowired
-    public WorkspacesListCommand(AbstractStorage storage, AsanaClient asanaClient) {
-        super("workspaces", "List of workspaces in Asana");
+    public ProjectsListCommand(AbstractStorage storage, AsanaClient asanaClient) {
+        super("projects", "List of projects in workspace");
         this.storage = storage;
         this.asanaClient = asanaClient;
     }
+
 
     @Override
     public void execute(AbsSender sender, User user, Chat chat, String[] args) {
         TelegramUser tgUser = storage.getUser(user.getId());
         SendMessage message = new SendMessage().setChatId(chat.getId());
-
-        if (tgUser == null) {
-            message.setText("You're not authorized...");
-        } else {
-            com.asana.models.User userInfo = tgUser.getUser();
-            Collection<Workspace> workspaces = userInfo.workspaces;
-            try {
-                message.setText(createMessage(workspaces));
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            if (args.length == 0) {
+                message = message.setText("You haven't provided workspace name in the arguments...");
+            } else {
+                String command = args.length > 1 ? String.join(" ", args) : args[0];
+                List<Project> projects = asanaClient.getProjects(command, tgUser.getToken());
+                message.setText(createMessage(projects));
             }
+        } catch (IOException e) {
+            message = message.setText("Incorrect workspace name!");
         }
 
         try {
@@ -53,10 +53,10 @@ public class WorkspacesListCommand extends BotCommand {
         }
     }
 
-    private String createMessage(Collection<Workspace> data) throws IOException {
+    private String createMessage(List<Project> data) throws IOException {
         StringBuilder sb = new StringBuilder();
-        for (Workspace workspace : data) {
-            sb.append(workspace.name).append("\n");
+        for (Project project : data) {
+            sb.append(project.name).append("\n");
         }
         return sb.toString();
     }

@@ -1,16 +1,16 @@
 package ru.ottepel.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
+import ru.ottepel.bot.AsanaTelegramBot;
 import ru.ottepel.AsanaClient;
-import ru.ottepel.AsanaTelegramBot;
-import ru.ottepel.command.StartCommand;
-import ru.ottepel.command.WorkspacesListCommand;
+import ru.ottepel.command.*;
 import ru.ottepel.storage.AbstractStorage;
 import ru.ottepel.storage.InMemoryStorage;
 
@@ -22,6 +22,9 @@ import javax.annotation.PostConstruct;
 @Import(AsanaConfig.class)
 @Configuration
 public class BotConfig {
+    @Value("${telegram.botName}")
+    private String botName;
+
     @Autowired
     private AsanaClient asanaClient;
 
@@ -35,15 +38,18 @@ public class BotConfig {
         return new AsanaTelegramBot(inMemoryStorage(), asanaClient);
     }
 
-
     @PostConstruct
     public void init() {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         AsanaTelegramBot bot = asanaTelegramBot();
+
         bot.registerAll(
-                new StartCommand(inMemoryStorage(), asanaClient),
-                new WorkspacesListCommand(inMemoryStorage(), asanaClient));
+                new StartCommand(asanaClient),
+                new WorkspacesListCommand(inMemoryStorage(), asanaClient),
+                new ProjectsListCommand(inMemoryStorage(), asanaClient),
+                new SubscribeCommand(inMemoryStorage(), asanaClient),
+                new HelpCommand());
 
         try {
             telegramBotsApi.registerBot(bot);
@@ -52,3 +58,4 @@ public class BotConfig {
         }
     }
 }
+

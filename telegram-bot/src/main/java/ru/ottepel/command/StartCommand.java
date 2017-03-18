@@ -1,7 +1,6 @@
 package ru.ottepel.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
@@ -10,7 +9,6 @@ import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.bots.commands.BotCommand;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import ru.ottepel.AsanaClient;
-import ru.ottepel.storage.AbstractStorage;
 
 /**
  * Created by savetisyan on 17/03/17
@@ -18,13 +16,11 @@ import ru.ottepel.storage.AbstractStorage;
 @Component
 public class StartCommand extends BotCommand {
     private static final String messageTemplate = "Please, open the following link in the browser and send code to this chat.\n%s";
-    private final AbstractStorage storage;
     private final AsanaClient asanaClient;
 
     @Autowired
-    public StartCommand(AbstractStorage storage, AsanaClient asanaClient) {
+    public StartCommand(AsanaClient asanaClient) {
         super("start", "Authorize in Asana");
-        this.storage = storage;
         this.asanaClient = asanaClient;
     }
 

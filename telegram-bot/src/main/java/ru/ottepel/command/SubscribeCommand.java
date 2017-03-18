@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
+import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.bots.AbsSender;
 import org.telegram.telegrambots.bots.commands.BotCommand;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -13,18 +15,21 @@ import ru.ottepel.model.TelegramUser;
 import ru.ottepel.storage.AbstractStorage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by savetisyan on 18/03/17
  */
-public class WorkspacesListCommand extends BotCommand {
+public class SubscribeCommand extends BotCommand {
     private final AbstractStorage storage;
     private final AsanaClient asanaClient;
 
     @Autowired
-    public WorkspacesListCommand(AbstractStorage storage, AsanaClient asanaClient) {
-        super("workspaces", "List of workspaces in Asana");
+    public SubscribeCommand(AbstractStorage storage, AsanaClient asanaClient) {
+        super("subscribe", "Subscribe to the project notifications");
         this.storage = storage;
         this.asanaClient = asanaClient;
     }
@@ -39,11 +44,10 @@ public class WorkspacesListCommand extends BotCommand {
         } else {
             com.asana.models.User userInfo = tgUser.getUser();
             Collection<Workspace> workspaces = userInfo.workspaces;
-            try {
-                message.setText(createMessage(workspaces));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            message.setText("Choose workspace");
+            message.setReplyMarkup(new InlineKeyboardMarkup()
+                    .setKeyboard(generateKeyboard(workspaces)));
         }
 
         try {
@@ -53,11 +57,15 @@ public class WorkspacesListCommand extends BotCommand {
         }
     }
 
-    private String createMessage(Collection<Workspace> data) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (Workspace workspace : data) {
-            sb.append(workspace.name).append("\n");
+    private List<List<InlineKeyboardButton>> generateKeyboard(Collection<Workspace> workspaces) {
+        List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
+        for (Workspace workspace : workspaces) {
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(workspace.name);
+            button.setCallbackData("workspace " + workspace.id);
+            keyboardRows.add(Collections.singletonList(button));
         }
-        return sb.toString();
+
+        return keyboardRows;
     }
 }

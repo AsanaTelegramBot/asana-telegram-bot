@@ -7,6 +7,7 @@ import com.asana.models.User;
  */
 public class TelegramUser {
     private long id;
+    private String token;
     private User user;
 
     public long getId() {
@@ -15,6 +16,14 @@ public class TelegramUser {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public User getUser() {
