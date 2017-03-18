@@ -9,7 +9,7 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import ru.ottepel.AsanaClient;
 import ru.ottepel.AsanaTelegramBot;
-import ru.ottepel.command.AuthCommand;
+import ru.ottepel.command.StartCommand;
 import ru.ottepel.command.WorkspacesListCommand;
 import ru.ottepel.storage.AbstractStorage;
 import ru.ottepel.storage.InMemoryStorage;
@@ -42,7 +42,7 @@ public class BotConfig {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         AsanaTelegramBot bot = asanaTelegramBot();
         bot.registerAll(
-                new AuthCommand(inMemoryStorage(), asanaClient),
+                new StartCommand(inMemoryStorage(), asanaClient),
                 new WorkspacesListCommand(inMemoryStorage(), asanaClient));
 
         try {

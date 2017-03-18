@@ -7,6 +7,7 @@ import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResul
 import ru.ottepel.storage.AbstractStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,9 +25,9 @@ public class TypeAheadSearch {
         AnswerInlineQuery answer = new AnswerInlineQuery();
         answer.setInlineQueryId(inlineQuery.getId());
 //        answer.setCacheTime(CACHE_TIME);
-        answer.setSwitchPmText("Search...");
-//        answer.setSwitchPmParameter("haha");
-        answer.setResults(getResults(update.getMessage().getChatId(), inlineQuery));
+        answer.setSwitchPmText("Login in Asana...");
+        answer.setSwitchPmParameter(String.valueOf(update.getInlineQuery().getFrom().getId()));
+        answer.setResults(Collections.emptyList());
         return answer;
     }
 

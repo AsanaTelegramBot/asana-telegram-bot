@@ -16,14 +16,14 @@ import ru.ottepel.storage.AbstractStorage;
  * Created by savetisyan on 17/03/17
  */
 @Component
-public class AuthCommand extends BotCommand {
+public class StartCommand extends BotCommand {
     private static final String messageTemplate = "Please, open the following link in the browser and send code to this chat.\n%s";
     private final AbstractStorage storage;
     private final AsanaClient asanaClient;
 
     @Autowired
-    public AuthCommand(AbstractStorage storage, AsanaClient asanaClient) {
-        super("auth", "Authorize in Asana");
+    public StartCommand(AbstractStorage storage, AsanaClient asanaClient) {
+        super("start", "Authorize in Asana");
         this.storage = storage;
         this.asanaClient = asanaClient;
     }
