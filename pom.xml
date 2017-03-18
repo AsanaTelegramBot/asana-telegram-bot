@@ -18,7 +18,6 @@
 
     <modules>
         <module>telegram-bot</module>
-        <module>asana-api</module>
     </modules>
 
     <dependencies>

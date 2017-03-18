@@ -5,7 +5,6 @@ import com.asana.models.User;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.api.client.util.DateTime;
@@ -22,12 +21,12 @@ public class EventDeserializer extends JsonDeserializer<Event> {
         String dateTime = node.get("created_at").asText();
         event.createdAt = new DateTime(dateTime);
         event.action = node.get("action").asText();
-        event.resource = new Event(). new Entity();
-        event.parent = new Event(). new Entity();
+        event.resource = new Event().new Entity();
+        event.parent = new Event().new Entity();
         event.user = new User();
         event.user.id = node.get("user").asText();
         event.resource.id = node.get("resource").asText();
         event.parent.id = node.get("parent").asText();
-        return  event;
+        return event;
     }
 }

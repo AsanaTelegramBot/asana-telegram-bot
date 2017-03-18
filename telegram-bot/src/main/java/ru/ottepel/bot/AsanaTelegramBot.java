@@ -2,7 +2,6 @@ package ru.ottepel.bot;
 
 import com.asana.models.Project;
 import com.asana.models.User;
-import com.asana.models.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -91,6 +90,10 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
         String[] split = query.getData().split(" ");
         String command = split[0];
         String id = split[1];
+        String name = "";
+        if (split.length == 3) {
+            name = split[2];
+        }
 
         TelegramUser user = storage.getUser(query.getFrom().getId());
         SendMessage message = new SendMessage()
@@ -107,8 +110,8 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 }
                 break;
             case "project":
-                Webhook subscribe = asanaClient.subscribe(id, "https://05047605.ngrok.io/webhooks/" + query.getMessage().getChatId(), user.getToken());
-                message.setText("You've subscribed to " + id);
+                asanaClient.subscribe(id, "https://45af11dd.ngrok.io/webhooks/" + query.getMessage().getChatId(), user.getToken());
+                message.setText("You've subscribed to " + name + "!");
                 break;
         }
 
@@ -120,7 +123,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
         for (Project project : projects) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(project.name);
-            button.setCallbackData("project " + project.id);
+            button.setCallbackData("project " + project.id + " " + project.name);
             keyboardRows.add(Collections.singletonList(button));
         }
 

@@ -6,9 +6,7 @@ import org.springframework.stereotype.Component;
 /**
  * Created by vovcyan on 18.03.17.
  */
-@Component
 public class EventList {
-
     private Event[] events;
 
     public EventList() {
