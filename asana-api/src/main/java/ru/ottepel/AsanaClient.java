@@ -2,11 +2,15 @@ package ru.ottepel;
 
 import com.asana.Client;
 import com.asana.OAuthApp;
+import com.asana.models.Project;
 import com.asana.models.User;
+import com.asana.models.Webhook;
+import com.asana.requests.ItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class AsanaClient {
@@ -32,13 +36,30 @@ public class AsanaClient {
     }
 
     public User getUserInfo(String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.users.me().execute();
+    }
+
+    public List<Project> getProjects(String workspaceId, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.projects.findByWorkspace(workspaceId).execute();
+    }
+
+    public Webhook subscribe(String id, String url, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        ItemRequest<Webhook> request = client.webhooks.create();
+        request.query("resource", id);
+        request.query("target", url);
+        return request.execute();
+    }
+
+    private Client createClient(String accessToken) {
         OAuthApp app = new OAuthApp(
                 asanaClientId,
                 asanaClientSecret,
                 "urn:ietf:wg:oauth:2.0:oob",
                 accessToken
         );
-        Client client = Client.oauth(app);
-        return client.users.me().execute();
+        return Client.oauth(app);
     }
 }
