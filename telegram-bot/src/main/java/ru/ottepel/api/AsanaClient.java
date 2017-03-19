@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class AsanaClient {
     private final OAuthApp app;
 
-
     @Autowired
     public AsanaClient(OAuthApp app) {
         this.app = app;

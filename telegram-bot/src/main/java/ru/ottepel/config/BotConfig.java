@@ -30,13 +30,18 @@ public class BotConfig {
     private AsanaClient asanaClient;
 
     @Bean
+    public TypeAheadSearch typeAheadSearch() {
+        return new TypeAheadSearch(inMemoryStorage());
+    }
+
+    @Bean
     public AbstractStorage inMemoryStorage() {
         return new InMemoryStorage();
     }
 
     @Bean
     public AsanaTelegramBot asanaTelegramBot() {
-        return new AsanaTelegramBot(inMemoryStorage(), asanaClient);
+        return new AsanaTelegramBot(inMemoryStorage(), asanaClient, typeAheadSearch());
     }
 
     @PostConstruct

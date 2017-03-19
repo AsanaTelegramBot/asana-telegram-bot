@@ -31,6 +31,9 @@ import java.util.List;
  */
 @Component
 public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
+    @Value("${host}")
+    public String host;
+
     @Value("${telegram.botName}")
     private String botName;
 
@@ -38,16 +41,14 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
     private String botToken;
 
     private final AsanaClient asanaClient;
-    private AbstractStorage storage;
-    private TypeAheadSearch searcher;
-
-    private String host = "https://62c2f0c0.ngrok.io/webhooks/";
+    private final TypeAheadSearch searcher;
+    private final AbstractStorage storage;
 
     @Autowired
-    public AsanaTelegramBot(AbstractStorage storage, AsanaClient asanaClient) {
+    public AsanaTelegramBot(AbstractStorage storage, AsanaClient asanaClient, TypeAheadSearch searcher) {
         this.storage = storage;
-        this.searcher = new TypeAheadSearch(storage);
         this.asanaClient = asanaClient;
+        this.searcher = searcher;
     }
 
     @Override
@@ -78,11 +79,14 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 tgUser.setId(update.getMessage().getFrom().getId());
                 tgUser.setUser(userInfo);
                 tgUser.setToken(token);
+
                 storage.saveUser(tgUser);
+                storage.saveUser(update.getMessage().getChatId(), tgUser);
 
                 sendMessage(new SendMessage()
                         .setChatId(message.getChatId())
-                        .setText(String.format("Hello, %s!", userInfo.name)));
+                        .setParseMode("Markdown")
+                        .setText(String.format("Hello, *%s*!\nUse /help for more information.", userInfo.name)));
             } catch (TelegramApiException | IOException e) {
                 e.printStackTrace();
             }
@@ -101,6 +105,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
         TelegramUser user = storage.getUser(query.getFrom().getId());
         SendMessage message = new SendMessage()
                 .setChatId(query.getMessage().getChatId());
+        String url = host + "/webhooks/" + query.getMessage().getChatId();
         switch (command) {
             case "workspace":
                 try {
@@ -114,7 +119,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 break;
             case "project":
                 try {
-                    asanaClient.subscribe(id, host + query.getMessage().getChatId(), user.getToken());
+                    asanaClient.subscribe(id, url, user.getToken());
                     message.setText("You've subscribed to " + name + "!");
                 } catch (IOException e) {
                     message.setText("You're already subscribed!");
@@ -138,7 +143,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 break;
             case "webhook":
                 try {
-                    Webhook unsubscribe = asanaClient.unsubscribe(id, user.getToken());
+                    asanaClient.unsubscribe(id, user.getToken());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -146,7 +151,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 break;
             case "subscribeAll":
                 try {
-                    asanaClient.subscribeToAll(id, host + query.getMessage().getChatId(), user.getToken());
+                    asanaClient.subscribeToAll(id, url, user.getToken());
                     message.setText("You've subscribed to all projects in this workspace");
                 } catch (IOException e) {
                     message.setText("You're don't have project in this workspace");

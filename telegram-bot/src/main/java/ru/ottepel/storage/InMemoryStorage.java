@@ -12,6 +12,7 @@ import java.util.Map;
 @Component
 public class InMemoryStorage implements AbstractStorage {
     private Map<Long, TelegramUser> users = new HashMap<>();
+    private Map<Long, TelegramUser> usersByChat = new HashMap<>();
 
     @Override
     public void saveUser(TelegramUser user) {
@@ -19,7 +20,17 @@ public class InMemoryStorage implements AbstractStorage {
     }
 
     @Override
+    public void saveUser(long chatId, TelegramUser user) {
+        usersByChat.put(chatId, user);
+    }
+
+    @Override
     public TelegramUser getUser(long id) {
         return users.get(id);
+    }
+
+    @Override
+    public TelegramUser getUserByChatId(long id) {
+        return usersByChat.get(id);
     }
 }

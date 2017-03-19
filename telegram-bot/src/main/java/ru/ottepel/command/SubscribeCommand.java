@@ -43,6 +43,7 @@ public class SubscribeCommand extends BotCommand {
             message.setText("You're not authorized...");
         } else {
             com.asana.models.User userInfo = tgUser.getUser();
+            storage.saveUser(chat.getId(), tgUser);
             Collection<Workspace> workspaces = userInfo.workspaces;
 
             message.setText("Choose workspace");

@@ -7,5 +7,7 @@ import ru.ottepel.model.TelegramUser;
  */
 public interface AbstractStorage {
     void saveUser(TelegramUser user);
+    void saveUser(long chatId, TelegramUser user);
     TelegramUser getUser(long id);
+    TelegramUser getUserByChatId(long id);
 }

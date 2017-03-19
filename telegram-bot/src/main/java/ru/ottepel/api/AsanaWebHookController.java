@@ -51,7 +51,7 @@ public class AsanaWebHookController {
 
         try {
             EventList eventList = mapper.readValue(data, EventList.class);
-            TelegramUser user = storage.getUser(chatId);
+            TelegramUser user = storage.getUserByChatId(chatId);
 
             if(user == null) {
                 return new ResponseEntity(headers, HttpStatus.OK);
@@ -63,6 +63,7 @@ public class AsanaWebHookController {
                 String newText = generateUpdateMessage(user, event, asanaUser);
                 if (!newText.equals(oldText)) {
                     bot.sendMessage(new SendMessage()
+                            .setParseMode("Markdown")
                             .setChatId(chatId)
                             .setText(newText));
                     oldText = newText;
@@ -77,7 +78,9 @@ public class AsanaWebHookController {
     }
 
     private String generateUpdateMessage(TelegramUser user, Event event, User asanaUser) throws IOException {
-        String message = "%s %s was %s by %s";
+        String message = "%s *%s* was _%s_ by *%s*";
+        String storyMessage = "%s *%s* by *%s*";
+
         StringBuilder newText = new StringBuilder();
         switch (event.type) {
             case "task":
@@ -86,11 +89,12 @@ public class AsanaWebHookController {
                 } else {
                     Task task = client.getTask(event.resource.id, user.getToken());
                     newText.append(String.format(message, "Task", task.name, event.action, asanaUser.name))
-                            .append("Assignee: ").append(task.assignee.name)
                             .append("\n")
-                            .append("Status: ").append(task.assigneeStatus)
+                            .append("*Assignee:* ").append(task.assignee != null ? task.assignee.name : " Not assigned")
                             .append("\n")
-                            .append("Last modified: ").append(task.modifiedAt);
+                            .append("*Status:* ").append(task.assigneeStatus)
+                            .append("\n")
+                            .append("*Last modified:* ").append(task.modifiedAt);
                 }
                 break;
             case "project":
@@ -98,15 +102,28 @@ public class AsanaWebHookController {
                     newText.append(String.format(message, "Project", "", event.action, asanaUser.name));
                 } else {
                     Project project = client.getProject(event.resource.id, user.getToken());
-                    newText.append(String.format(message, "Project", project.name, event.action, asanaUser.name));
+                    newText.append(String.format(message, "Project", project.name, event.action, asanaUser.name))
+                            .append("\n")
+                            .append("*Notes:* ").append(project.notes)
+                            .append("\n")
+                            .append("*Is public:* ").append(project.isPublic)
+                            .append("\n")
+                            .append("*Last modified:* ").append(project.modifiedAt);
                 }
+
                 break;
             case "story":
                 if (event.action.equals("deleted")) {
-                    newText.append(String.format(message, "Story", "", event.action, asanaUser.name));
+                    newText.append(String.format(storyMessage, "Story", "", asanaUser.name));
                 } else {
                     Story story = client.getStory(event.resource.id, user.getToken());
-                    newText.append(String.format(message, "Story", story.text, event.action, asanaUser.name));
+                    newText.append(String.format(storyMessage, "Story", story.text, asanaUser.name))
+                            .append("\n")
+                            .append("*Type:* ").append(story.type)
+                            .append("\n")
+                            .append("*Owner:* ").append(story.createdBy.name)
+                            .append("\n")
+                            .append("*Created at:* ").append(story.createdAt);
                 }
                 break;
         }
