@@ -31,7 +31,7 @@ public class BotConfig {
 
     @Bean
     public TypeAheadSearch typeAheadSearch() {
-        return new TypeAheadSearch(inMemoryStorage());
+        return new TypeAheadSearch(inMemoryStorage(), asanaClient);
     }
 
     @Bean
