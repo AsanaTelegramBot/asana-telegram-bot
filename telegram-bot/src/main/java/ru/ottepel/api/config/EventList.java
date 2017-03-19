@@ -1,7 +1,6 @@
 package ru.ottepel.api.config;
 
 import com.asana.models.Event;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by vovcyan on 18.03.17.

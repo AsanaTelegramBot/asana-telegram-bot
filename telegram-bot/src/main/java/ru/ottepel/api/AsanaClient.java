@@ -67,10 +67,33 @@ public class AsanaClient {
 
     public Webhook subscribe(String id, String url, String accessToken) throws IOException {
         Client client = createClient(accessToken);
+
+        String workspaceId = client.projects.findById(id).execute().workspace.id;
+
+        for (Webhook webhook : getWebhooks(workspaceId, accessToken)) {
+            if (webhook.resource.id.equals(id)) {
+                throw new IOException("Already subscribed");
+            }
+        }
+
         ItemRequest<Webhook> request = client.webhooks.create();
         request.query("resource", id);
         request.query("target", url);
         return request.execute();
+    }
+
+    public Webhook unSubscribe(String id, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        ItemRequest<Webhook> request = client.webhooks.deleteById(id);
+        return request.execute();
+    }
+
+    public List<Webhook> getWebhooks(String id, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        return client.webhooks
+                .getAll()
+                .query("workspace", id)
+                .execute();
     }
 
     private Client createClient(String accessToken) {

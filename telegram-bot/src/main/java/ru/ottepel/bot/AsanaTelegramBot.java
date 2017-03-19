@@ -2,6 +2,7 @@ package ru.ottepel.bot;
 
 import com.asana.models.Project;
 import com.asana.models.User;
+import com.asana.models.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,17 +51,17 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
     @Override
     public void processNonCommandUpdate(Update update) {
         if (update.hasInlineQuery()) {
-            AnswerInlineQuery answer = searcher.search(update);
             try {
+                AnswerInlineQuery answer = searcher.search(update);
                 answerInlineQuery(answer);
-            } catch (TelegramApiException e) {
+            } catch (IOException | TelegramApiException e) {
                 e.printStackTrace();
             }
         } else {
             if (update.hasCallbackQuery()) {
                 try {
                     processCallbackQuery(update.getCallbackQuery());
-                } catch (IOException | TelegramApiException e) {
+                } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
                 return;
@@ -86,7 +87,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
         }
     }
 
-    private void processCallbackQuery(CallbackQuery query) throws IOException, TelegramApiException {
+    private void processCallbackQuery(CallbackQuery query) throws TelegramApiException {
         String[] split = query.getData().split(" ");
         String command = split[0];
         String id = split[1];
@@ -110,8 +111,36 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 }
                 break;
             case "project":
-                asanaClient.subscribe(id, "https://45af11dd.ngrok.io/webhooks/" + query.getMessage().getChatId(), user.getToken());
-                message.setText("You've subscribed to " + name + "!");
+                try {
+                    asanaClient.subscribe(id, "https://cc49628e.ngrok.io/webhooks/" + query.getMessage().getChatId(), user.getToken());
+                    message.setText("You've subscribed to " + name + "!");
+                } catch (IOException e) {
+                    message.setText("You're already subscribed!");
+                }
+                break;
+            case "webhookList":
+                try {
+                    List<Webhook> webhooks = asanaClient.getWebhooks(id, user.getToken());
+
+                    if (webhooks.size() > 0) {
+                        message.setText("Choose webhook");
+                    } else {
+                        message.setText("No subscriptions found");
+                    }
+
+                    message.setReplyMarkup(new InlineKeyboardMarkup()
+                            .setKeyboard(generateWebhookKeyboard(webhooks)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "webhook":
+                try {
+                    Webhook unSubscribe = asanaClient.unSubscribe(id, user.getToken());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                message.setText("You've unsubscribed from " + split[2]);
                 break;
         }
 
@@ -124,6 +153,18 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(project.name);
             button.setCallbackData("project " + project.id + " " + project.name);
+            keyboardRows.add(Collections.singletonList(button));
+        }
+
+        return keyboardRows;
+    }
+
+    private List<List<InlineKeyboardButton>> generateWebhookKeyboard(List<Webhook> webhooks) {
+        List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
+        for (Webhook webhook : webhooks) {
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(webhook.resource.name);
+            button.setCallbackData("webhook " + webhook.id + " " + webhook.resource.name);
             keyboardRows.add(Collections.singletonList(button));
         }
 

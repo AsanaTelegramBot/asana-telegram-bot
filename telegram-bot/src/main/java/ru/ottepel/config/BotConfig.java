@@ -50,6 +50,7 @@ public class BotConfig {
                 new WorkspacesListCommand(inMemoryStorage(), asanaClient),
                 new ProjectsListCommand(inMemoryStorage(), asanaClient),
                 new SubscribeCommand(inMemoryStorage(), asanaClient),
+                new UnSubscribeCommand(inMemoryStorage(), asanaClient),
                 new HelpCommand());
         try {
             telegramBotsApi.registerBot(bot);
