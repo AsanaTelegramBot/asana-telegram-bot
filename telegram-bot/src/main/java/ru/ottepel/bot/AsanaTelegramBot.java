@@ -41,6 +41,8 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
     private AbstractStorage storage;
     private TypeAheadSearch searcher;
 
+    private String host = "https://62c2f0c0.ngrok.io/webhooks/";
+
     @Autowired
     public AsanaTelegramBot(AbstractStorage storage, AsanaClient asanaClient) {
         this.storage = storage;
@@ -112,7 +114,7 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 break;
             case "project":
                 try {
-                    asanaClient.subscribe(id, "https://cc49628e.ngrok.io/webhooks/" + query.getMessage().getChatId(), user.getToken());
+                    asanaClient.subscribe(id, host + query.getMessage().getChatId(), user.getToken());
                     message.setText("You've subscribed to " + name + "!");
                 } catch (IOException e) {
                     message.setText("You're already subscribed!");
@@ -136,11 +138,29 @@ public class AsanaTelegramBot extends TelegramLongPollingCommandBot {
                 break;
             case "webhook":
                 try {
-                    Webhook unSubscribe = asanaClient.unSubscribe(id, user.getToken());
+                    Webhook unsubscribe = asanaClient.unsubscribe(id, user.getToken());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 message.setText("You've unsubscribed from " + split[2]);
+                break;
+            case "subscribeAll":
+                try {
+                    asanaClient.subscribeToAll(id, host + query.getMessage().getChatId(), user.getToken());
+                    message.setText("You've subscribed to all projects in this workspace");
+                } catch (IOException e) {
+                    message.setText("You're don't have project in this workspace");
+                    e.printStackTrace();
+                }
+                break;
+            case "unsubscribeAll":
+                try {
+                    asanaClient.unsubscribe(id, user.getToken());
+                    message.setText("You've unsubscribed for all projects in " + split[2] + " workspace");
+                } catch (IOException e) {
+                    message.setText("You're don't have active subscribes in this workspace");
+                    e.printStackTrace();
+                }
                 break;
         }
 

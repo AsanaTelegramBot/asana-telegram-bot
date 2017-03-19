@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AsanaClient {
@@ -82,10 +83,35 @@ public class AsanaClient {
         return request.execute();
     }
 
-    public Webhook unSubscribe(String id, String accessToken) throws IOException {
+    public Webhook unsubscribe(String id, String accessToken) throws IOException {
         Client client = createClient(accessToken);
         ItemRequest<Webhook> request = client.webhooks.deleteById(id);
         return request.execute();
+    }
+
+    public void subscribeToAll(String workspace, String url, String accessToken) throws IOException {
+        Client client = createClient(accessToken);
+        List<Project> projects = client.projects
+                .findAll()
+                .query("workspace", workspace)
+                .execute();
+
+        List<String> webhookIds = getWebhooks(workspace, accessToken)
+                .stream()
+                .map(webhook -> webhook.resource.id).collect(Collectors.toList());
+
+        for (Project project : projects) {
+            if (!webhookIds.contains(project.id)) {
+                client.webhooks.create()
+                        .query("resource", project.id)
+                        .query("target", url)
+                        .execute();
+            }
+        }
+    }
+
+    public void unsubscribeFromAll(String wor) {
+
     }
 
     public List<Webhook> getWebhooks(String id, String accessToken) throws IOException {

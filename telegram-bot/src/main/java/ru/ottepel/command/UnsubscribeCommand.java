@@ -22,12 +22,12 @@ import java.util.List;
 /**
  * Created by vovcyan on 18.03.17.
  */
-public class UnSubscribeCommand extends BotCommand {
+public class UnsubscribeCommand extends BotCommand {
     private final AbstractStorage storage;
     private final AsanaClient asanaClient;
 
     @Autowired
-    public UnSubscribeCommand(AbstractStorage storage, AsanaClient asanaClient) {
+    public UnsubscribeCommand(AbstractStorage storage, AsanaClient asanaClient) {
         super("unsubscribe", "Unsubscribe from project notifications");
         this.storage = storage;
         this.asanaClient = asanaClient;
