@@ -1,0 +1,7 @@
+host: ${HOST:https://4400c0c4.ngrok.io}
+telegram:
+  botName: ${BOT_NAME:AsanaOttepelBot}
+  botToken: ${BOT_TOKEN:338480209:AAF9L-zDYHfJTso4tpQWMuXDZvdsLrABcH0}
+asana:
+  clientId: ${ASANA_CLIENT_ID:297359328358654}
+  clientSecret: ${ASANA_CLIENT_SECRET:e49fa13e01a9c03aecf01ad6f5ee417d}
